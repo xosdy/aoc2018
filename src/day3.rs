@@ -43,8 +43,7 @@ pub fn input_generator(input: &str) -> Vec<Claim> {
         .collect()
 }
 
-#[aoc(day3, part1)]
-pub fn solve_part1(claims: &Vec<Claim>) -> usize {
+fn gen_grid(claims: &Vec<Claim>) -> HashMap<u32, Status> {
     let grid_width = claims
         .iter()
         .max_by_key(|claim| claim.x + claim.width)
@@ -65,6 +64,13 @@ pub fn solve_part1(claims: &Vec<Claim>) -> usize {
             }
         }
     }
+
+    grid
+}
+
+#[aoc(day3, part1)]
+pub fn solve_part1(claims: &Vec<Claim>) -> usize {
+    let grid = gen_grid(claims);
 
     grid.iter()
         .filter(|(_, ref x)| **x == Status::Overlap)
