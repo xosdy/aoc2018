@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 pub struct Claim {
     id: u32,
@@ -11,7 +12,7 @@ pub struct Claim {
 #[derive(PartialEq)]
 pub enum Status {
     Valid(u32),
-    Overlap,
+    Overlap(Vec<u32>),
 }
 
 #[aoc_generator(day3)]
@@ -56,11 +57,12 @@ fn gen_grid(claims: &Vec<Claim>) -> HashMap<u32, Status> {
         for x in claim.x..claim.x + claim.width {
             for y in claim.y..claim.y + claim.height {
                 let position = get_position(x, y);
-                if grid.contains_key(&position) {
-                    grid.insert(position, Status::Overlap);
-                } else {
-                    grid.insert(position, Status::Valid(claim.id));
-                }
+                grid.entry(position)
+                    .and_modify(|e| match e {
+                        Status::Valid(id) => *e = Status::Overlap(vec![*id, claim.id]),
+                        Status::Overlap(ids) => ids.push(claim.id),
+                    })
+                    .or_insert(Status::Valid(claim.id));
             }
         }
     }
@@ -73,8 +75,31 @@ pub fn solve_part1(claims: &Vec<Claim>) -> usize {
     let grid = gen_grid(claims);
 
     grid.iter()
-        .filter(|(_, ref x)| **x == Status::Overlap)
+        .filter(|(_, x)| match x {
+            Status::Valid(_) => false,
+            Status::Overlap(_) => true,
+        })
         .count()
+}
+
+#[aoc(day3, part2)]
+pub fn solve_part2(claims: &Vec<Claim>) -> u32 {
+    let grid = gen_grid(claims);
+
+    let mut ids: HashSet<u32> = claims.iter().map(|claim| claim.id).collect();
+
+    grid.iter()
+        .filter_map(|(_, x)| match x {
+            Status::Valid(_) => None,
+            Status::Overlap(v) => Some(v),
+        })
+        .for_each(|v| {
+            v.iter().for_each(|id| {
+                ids.remove(id);
+            })
+        });
+
+    *ids.iter().next().unwrap()
 }
 
 #[cfg(test)]
@@ -90,6 +115,19 @@ mod tests {
 #3 @ 5,5: 2x2"
             )),
             4
+        );
+    }
+
+    #[test]
+    fn part2() {
+        assert_eq!(
+            solve_part2(&input_generator(
+                r"#1 @ 1,3: 4x4
+#2 @ 3,1: 4x4
+#3 @ 5,5: 2x2
+"
+            )),
+            3
         );
     }
 }
