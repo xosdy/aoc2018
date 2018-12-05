@@ -8,4 +8,5 @@ rust:
 cache: cargo
 script:
   - cargo install cargo-aoc
+  - cargo test --verbose
   - cargo aoc
