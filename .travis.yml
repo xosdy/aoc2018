@@ -6,3 +6,6 @@ os:
 rust:
   - nightly
 cache: cargo
+script:
+  - cargo install cargo-aoc
+  - cargo aoc
