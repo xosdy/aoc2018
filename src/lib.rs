@@ -1,3 +1,6 @@
+#![feature(vec_resize_with)]
+#![feature(vec_resize_default)]
+
 extern crate aoc_runner;
 #[macro_use]
 extern crate aoc_runner_derive;
@@ -9,5 +12,12 @@ pub mod day2;
 pub mod day3;
 pub mod day4;
 pub mod day5;
+pub mod day6;
 
 aoc_lib! {year = 2018}
+
+#[derive(Debug, PartialEq, Eq, Hash)]
+pub struct Point<T> {
+    x: T,
+    y: T,
+}
