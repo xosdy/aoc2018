@@ -1,12 +1,10 @@
-use std::collections::HashMap;
-use std::collections::HashSet;
+use super::Vec2;
+use std::collections::{HashMap, HashSet};
 
 pub struct Claim {
     id: u32,
-    x: u32,
-    y: u32,
-    width: u32,
-    height: u32,
+    position: Vec2<u32>,
+    size: Vec2<u32>,
 }
 
 #[derive(PartialEq)]
@@ -35,29 +33,25 @@ pub fn input_generator(input: &str) -> Vec<Claim> {
                 .map(|n| n.parse().unwrap());
             Claim {
                 id,
-                x: offset.next().unwrap(),
-                y: offset.next().unwrap(),
-                width: size.next().unwrap(),
-                height: size.next().unwrap(),
+                position: Vec2 {
+                    x: offset.next().unwrap(),
+                    y: offset.next().unwrap(),
+                },
+                size: Vec2 {
+                    x: size.next().unwrap(),
+                    y: size.next().unwrap(),
+                },
             }
         })
         .collect()
 }
 
-fn gen_grid(claims: &Vec<Claim>) -> HashMap<u32, Status> {
-    let grid_width = claims
-        .iter()
-        .max_by_key(|claim| claim.x + claim.width)
-        .unwrap();
-    let grid_width = grid_width.x + grid_width.width;
-    let get_position = |x: u32, y: u32| y * grid_width + x;
-
-    let mut grid = HashMap::<u32, Status>::new();
+fn gen_grid(claims: &Vec<Claim>) -> HashMap<Vec2<u32>, Status> {
+    let mut grid = HashMap::<Vec2<u32>, Status>::new();
     for claim in claims.iter() {
-        for x in claim.x..claim.x + claim.width {
-            for y in claim.y..claim.y + claim.height {
-                let position = get_position(x, y);
-                grid.entry(position)
+        for x in claim.position.x..claim.position.x + claim.size.x {
+            for y in claim.position.y..claim.position.y + claim.size.y {
+                grid.entry(Vec2 { x, y })
                     .and_modify(|e| match e {
                         Status::Valid(id) => *e = Status::Overlap(vec![*id, claim.id]),
                         Status::Overlap(ids) => ids.push(claim.id),
