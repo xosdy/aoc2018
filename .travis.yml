@@ -5,9 +5,8 @@ os:
   - windows
 rust:
   - nightly
-cache: cargo
 before_script:
-  - cargo install cargo-aoc || echo "cargo-aoc already installed"
+  - cargo install cargo-aoc
 script:
   - cargo build --verbose
   - cargo test --verbose
