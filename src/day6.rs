@@ -2,7 +2,7 @@ use super::Point;
 use std::collections::{HashMap, HashSet};
 
 #[aoc_generator(day6)]
-fn input_generator(input: &str) -> Vec<Point<u32>> {
+pub fn input_generator(input: &str) -> Vec<Point<i32>> {
     input
         .lines()
         .map(|line| {
@@ -16,7 +16,7 @@ fn input_generator(input: &str) -> Vec<Point<u32>> {
 }
 
 #[aoc(day6, part1)]
-fn solve_part1(points: &Vec<Point<u32>>) -> usize {
+pub fn solve_part1(points: &Vec<Point<i32>>) -> usize {
     let max_x = points.iter().max_by_key(|p| p.x).unwrap().x as usize + 1;
     let max_y = points.iter().max_by_key(|p| p.y).unwrap().y as usize + 1;
 
@@ -31,7 +31,7 @@ fn solve_part1(points: &Vec<Point<u32>>) -> usize {
         for x in 0..max_x {
             let distances: Vec<_> = points
                 .iter()
-                .map(|p| (p.x as i32 - x as i32).abs() + (p.y as i32 - y as i32).abs())
+                .map(|p| (p.x - x as i32).abs() + (p.y - y as i32).abs())
                 .collect();
             let min_distance = distances.iter().min().unwrap();
             let closest_points = distances
@@ -80,6 +80,32 @@ fn solve_part1(points: &Vec<Point<u32>>) -> usize {
     *finite_point_count.iter().max_by_key(|&(_, v)| v).unwrap().1
 }
 
+fn in_distance_count(points: &Vec<Point<i32>>, limit: usize) -> usize {
+    let offset = (limit / points.len()) as i32;
+
+    let min_x = points.iter().min_by_key(|p| p.x).unwrap().x - offset;
+    let min_y = points.iter().min_by_key(|p| p.y).unwrap().y - offset;
+    let max_x = points.iter().max_by_key(|p| p.x).unwrap().x + offset;
+    let max_y = points.iter().max_by_key(|p| p.y).unwrap().y + offset;
+
+    (min_x..max_x)
+        .flat_map(move |x| {
+            (min_y..max_y).map(move |y| {
+                points
+                    .iter()
+                    .map(move |p| (p.x - x).abs() + (p.y - y).abs())
+                    .sum::<i32>()
+            })
+        })
+        .filter(|d| *d < limit as i32)
+        .count()
+}
+
+#[aoc(day6, part2)]
+pub fn solve_part2(points: &Vec<Point<i32>>) -> usize {
+    in_distance_count(points, 10000)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -96,6 +122,24 @@ mod tests {
 8, 9"
             )),
             17
+        );
+    }
+
+    #[test]
+    fn part2() {
+        assert_eq!(
+            in_distance_count(
+                &input_generator(
+                    r"1, 1
+1, 6
+8, 3
+3, 4
+5, 5
+8, 9"
+                ),
+                32
+            ),
+            16
         );
     }
 }
