@@ -1,13 +1,13 @@
-use super::Point;
+use super::Vec2;
 use std::collections::{HashMap, HashSet};
 
 #[aoc_generator(day6)]
-pub fn input_generator(input: &str) -> Vec<Point<i32>> {
+pub fn input_generator(input: &str) -> Vec<Vec2<i32>> {
     input
         .lines()
         .map(|line| {
             let mut axes = line.split(',');
-            Point {
+            Vec2 {
                 x: axes.next().unwrap().trim().parse().unwrap(),
                 y: axes.next().unwrap().trim().parse().unwrap(),
             }
@@ -16,7 +16,7 @@ pub fn input_generator(input: &str) -> Vec<Point<i32>> {
 }
 
 #[aoc(day6, part1)]
-pub fn solve_part1(points: &Vec<Point<i32>>) -> usize {
+pub fn solve_part1(points: &Vec<Vec2<i32>>) -> usize {
     let max_x = points.iter().max_by_key(|p| p.x).unwrap().x as usize + 1;
     let max_y = points.iter().max_by_key(|p| p.y).unwrap().y as usize + 1;
 
@@ -80,7 +80,7 @@ pub fn solve_part1(points: &Vec<Point<i32>>) -> usize {
     *finite_point_count.iter().max_by_key(|&(_, v)| v).unwrap().1
 }
 
-fn in_distance_count(points: &Vec<Point<i32>>, limit: usize) -> usize {
+fn in_distance_count(points: &Vec<Vec2<i32>>, limit: usize) -> usize {
     let offset = (limit / points.len()) as i32;
 
     let min_x = points.iter().min_by_key(|p| p.x).unwrap().x - offset;
@@ -102,7 +102,7 @@ fn in_distance_count(points: &Vec<Point<i32>>, limit: usize) -> usize {
 }
 
 #[aoc(day6, part2)]
-pub fn solve_part2(points: &Vec<Point<i32>>) -> usize {
+pub fn solve_part2(points: &Vec<Vec2<i32>>) -> usize {
     in_distance_count(points, 10000)
 }
 

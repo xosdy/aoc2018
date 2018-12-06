@@ -17,7 +17,7 @@ pub mod day6;
 aoc_lib! {year = 2018}
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Point<T> {
+pub struct Vec2<T> {
     x: T,
     y: T,
 }
