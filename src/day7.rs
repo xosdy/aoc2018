@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, HashSet};
 
-pub type StepTree = BTreeMap<String, Vec<String>>;
+pub type StepTree = BTreeMap<char, Vec<char>>;
 
 #[aoc_generator(day7)]
 pub fn input_generator(input: &str) -> Box<StepTree> {
@@ -10,11 +10,11 @@ pub fn input_generator(input: &str) -> Box<StepTree> {
         // Step example
         // Step C must be finished before step A can begin.
         let parts: Vec<_> = line.split(' ').collect();
-        step_tree.entry(parts[1].to_owned()).or_default();
+        step_tree.entry(parts[1].chars().next().unwrap()).or_default();
         step_tree
-            .entry(parts[7].to_owned())
-            .and_modify(|e| e.push(parts[1].to_owned()))
-            .or_insert(vec![parts[1].to_owned()]);
+            .entry(parts[7].chars().next().unwrap())
+            .and_modify(|e| e.push(parts[1].chars().next().unwrap()))
+            .or_insert(vec![parts[1].chars().next().unwrap()]);
     });
 
     Box::new(step_tree)
@@ -22,7 +22,7 @@ pub fn input_generator(input: &str) -> Box<StepTree> {
 
 #[aoc(day7, part1)]
 pub fn solve_part1(step_tree: &StepTree) -> String {
-    let mut available_steps = HashSet::<String>::new();
+    let mut available_steps = HashSet::<char>::new();
 
     let mut sequence = String::new();
     while available_steps.len() != step_tree.len() {
@@ -32,7 +32,7 @@ pub fn solve_part1(step_tree: &StepTree) -> String {
                     || dependencies.iter().all(|dep| available_steps.contains(dep)))
             {
                 available_steps.insert(name.clone());
-                sequence.push_str(name);
+                sequence.push(*name);
                 break;
             }
         }
