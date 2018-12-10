@@ -1,10 +1,10 @@
-use super::Vec2;
+use cgmath::Vector2;
 use std::collections::{HashMap, HashSet};
 
 pub struct Claim {
     id: u32,
-    position: Vec2<u32>,
-    size: Vec2<u32>,
+    position: Vector2<u32>,
+    size: Vector2<u32>,
 }
 
 #[derive(PartialEq)]
@@ -33,11 +33,11 @@ pub fn input_generator(input: &str) -> Vec<Claim> {
                 .map(|n| n.parse().unwrap());
             Claim {
                 id,
-                position: Vec2 {
+                position: Vector2 {
                     x: offset.next().unwrap(),
                     y: offset.next().unwrap(),
                 },
-                size: Vec2 {
+                size: Vector2 {
                     x: size.next().unwrap(),
                     y: size.next().unwrap(),
                 },
@@ -46,12 +46,12 @@ pub fn input_generator(input: &str) -> Vec<Claim> {
         .collect()
 }
 
-fn gen_grid(claims: &Vec<Claim>) -> HashMap<Vec2<u32>, Status> {
-    let mut grid = HashMap::<Vec2<u32>, Status>::new();
+fn gen_grid(claims: &Vec<Claim>) -> HashMap<Vector2<u32>, Status> {
+    let mut grid = HashMap::<Vector2<u32>, Status>::new();
     for claim in claims.iter() {
         for x in claim.position.x..claim.position.x + claim.size.x {
             for y in claim.position.y..claim.position.y + claim.size.y {
-                grid.entry(Vec2 { x, y })
+                grid.entry(Vector2 { x, y })
                     .and_modify(|e| match e {
                         Status::Valid(id) => *e = Status::Overlap(vec![*id, claim.id]),
                         Status::Overlap(ids) => ids.push(claim.id),

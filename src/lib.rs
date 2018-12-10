@@ -20,10 +20,4 @@ pub mod day7;
 pub mod day8;
 pub mod day9;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Vec2<T> {
-    x: T,
-    y: T,
-}
-
 aoc_lib! {year = 2018}
