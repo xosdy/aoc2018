@@ -102,3 +102,18 @@ pub fn solve_part1(points: &Vec<Point>) -> String {
 
     format!("\n{}", grid)
 }
+
+#[aoc(day10, part2)]
+pub fn solve_part2(points: &Vec<Point>) -> usize {
+    let mut grid = Grid::new(points);
+    for i in 0.. {
+        let height = grid.size().1.y;
+        if height == 10 {
+            return i;
+        }
+
+        grid.update();
+    }
+
+    unreachable!();
+}
