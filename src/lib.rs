@@ -7,6 +7,7 @@ extern crate aoc_runner_derive;
 extern crate bytecount;
 extern crate cgmath;
 extern crate chrono;
+extern crate rayon;
 extern crate regex;
 
 pub mod day1;

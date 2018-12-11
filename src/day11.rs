@@ -1,4 +1,5 @@
 use cgmath::Vector2;
+use rayon::prelude::*;
 use std::collections::HashMap;
 
 pub fn get_cell_power(serial: u32, position: &Vector2<u32>) -> i32 {
@@ -31,6 +32,23 @@ pub fn find_largest_power(serial: u32) -> (Vector2<u32>, i32) {
     powers.into_iter().max_by_key(|&(_, p)| p).unwrap()
 }
 
+pub fn find_largest_power_any_square(serial: u32) -> (Vector2<u32>, u32, i32) {
+    let v: Vec<_> = (1..301u32)
+        .into_par_iter()
+        .flat_map(move |size| {
+            (1..300 - size + 2).into_par_iter().flat_map(move |y| {
+                (1..300 - size + 2).into_par_iter().map(move |x| {
+                    let position = Vector2 { x, y };
+                    let power = get_square_power(serial, &position, &Vector2 { x: size, y: size });
+                    (position, size, power)
+                })
+            })
+        })
+        .collect();
+
+    *v.par_iter().max_by_key(|(_, _, p)| p).unwrap()
+}
+
 #[aoc_generator(day11)]
 pub fn input_generator(input: &str) -> Box<u32> {
     Box::new(input.trim().parse().unwrap())
@@ -40,6 +58,12 @@ pub fn input_generator(input: &str) -> Box<u32> {
 pub fn solve_part1(serial: &u32) -> String {
     let pos = find_largest_power(*serial).0;
     format!("{},{}", pos.x, pos.y)
+}
+
+#[aoc(day11, part2)]
+pub fn solve_part2(serial: &u32) -> String {
+    let (pos, size, _) = find_largest_power_any_square(*serial);
+    format!("{},{},{}", pos.x, pos.y, size)
 }
 
 #[cfg(test)]
@@ -57,5 +81,17 @@ mod tests {
     fn test_find_largest_power() {
         assert_eq!(find_largest_power(18), (Vector2 { x: 33, y: 45 }, 29));
         assert_eq!(find_largest_power(42), (Vector2 { x: 21, y: 61 }, 30));
+    }
+
+    #[test]
+    fn test_find_largest_power_any_square() {
+        assert_eq!(
+            find_largest_power_any_square(18),
+            (Vector2 { x: 90, y: 269 }, 16, 113)
+        );
+        assert_eq!(
+            find_largest_power_any_square(42),
+            (Vector2 { x: 232, y: 251 }, 12, 119)
+        )
     }
 }
