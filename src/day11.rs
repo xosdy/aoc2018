@@ -1,5 +1,4 @@
 use cgmath::Vector2;
-use rayon::prelude::*;
 use std::collections::HashMap;
 
 pub fn get_cell_power(serial: u32, position: &Vector2<u32>) -> i32 {
@@ -32,21 +31,49 @@ pub fn find_largest_power(serial: u32) -> (Vector2<u32>, i32) {
     powers.into_iter().max_by_key(|&(_, p)| p).unwrap()
 }
 
-pub fn find_largest_power_any_square(serial: u32) -> (Vector2<u32>, u32, i32) {
-    let v: Vec<_> = (1..301u32)
-        .into_par_iter()
-        .flat_map(move |size| {
-            (1..300 - size + 2).into_par_iter().flat_map(move |y| {
-                (1..300 - size + 2).into_par_iter().map(move |x| {
-                    let position = Vector2 { x, y };
-                    let power = get_square_power(serial, &position, &Vector2 { x: size, y: size });
-                    (position, size, power)
-                })
-            })
-        })
-        .collect();
+/// Use [Summed-area table](https://en.wikipedia.org/wiki/Summed-area_table) to calculate largest square
+pub fn find_largest_power_any_square(serial: u32) -> (Vector2<u32>, usize, i32) {
+    let mut sum = [[0; 301]; 301];
+    for y in 1..=300 {
+        for x in 1..=300 {
+            let position = Vector2 {
+                x: x as u32,
+                y: y as u32,
+            };
+            let power = get_cell_power(serial, &position);
 
-    *v.par_iter().max_by_key(|(_, _, p)| p).unwrap()
+            sum[y][x] = power + sum[y - 1][x] + sum[y][x - 1] - sum[y - 1][x - 1];
+        }
+    }
+
+    let mut best = (Vector2 { x: 0, y: 0 }, 0, i32::min_value());
+    for size in 1..=300 {
+        for y in size..=300 {
+            for x in size..=300 {
+                let position = Vector2 {
+                    x: x as u32,
+                    y: y as u32,
+                };
+                let power =
+                    sum[y - size][x - size] + sum[y][x] - sum[y][x - size] - sum[y - size][x];
+
+                if power > best.2 {
+                    best = (
+                        // Need top-left position
+                        position
+                            - Vector2 {
+                                x: size as u32 - 1,
+                                y: size as u32 - 1,
+                            },
+                        size,
+                        power,
+                    );
+                }
+            }
+        }
+    }
+
+    best
 }
 
 #[aoc_generator(day11)]
