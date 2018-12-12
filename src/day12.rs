@@ -1,4 +1,5 @@
 use std::collections::{BTreeSet, HashSet};
+use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct Rule {
@@ -25,6 +26,16 @@ impl Rule {
 
     pub fn sum(&self) -> i32 {
         self.states.iter().sum()
+    }
+}
+
+impl fmt::Display for Rule {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let visualize_states = (-10..180).map(|i| match self.states.get(&i) {
+            Some(_) => '#',
+            None => '.',
+        }).collect::<String>();
+        write!(f, "{}", visualize_states)
     }
 }
 
@@ -59,6 +70,21 @@ pub fn solve_part1(rule: &Rule) -> i32 {
     }
 
     rule.sum()
+}
+
+#[aoc(day12, part2)]
+pub fn solve_part2(rule: &Rule) -> i64 {
+    let mut rule = rule.clone();
+
+
+    for _i in 0..200 {
+        // For my input, sum will increased by 80 after 99th generation
+        // println!("{:3} {}", _i, rule);
+        // println!("{:3} {:5}", _i, rule.sum());
+        rule.next_generation();
+    }
+
+    rule.sum() as i64 + (50000000000i64 - 200) * 80
 }
 
 #[cfg(test)]
