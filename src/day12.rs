@@ -31,10 +31,12 @@ impl Rule {
 
 impl fmt::Display for Rule {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let visualize_states = (-10..180).map(|i| match self.states.get(&i) {
-            Some(_) => '#',
-            None => '.',
-        }).collect::<String>();
+        let visualize_states = (-10..180)
+            .map(|i| match self.states.get(&i) {
+                Some(_) => '#',
+                None => '.',
+            })
+            .collect::<String>();
         write!(f, "{}", visualize_states)
     }
 }
@@ -75,7 +77,6 @@ pub fn solve_part1(rule: &Rule) -> i32 {
 #[aoc(day12, part2)]
 pub fn solve_part2(rule: &Rule) -> i64 {
     let mut rule = rule.clone();
-
 
     for _i in 0..200 {
         // For my input, sum will increased by 80 after 99th generation
