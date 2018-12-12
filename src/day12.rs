@@ -3,7 +3,7 @@ use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct Rule {
-    states: BTreeSet<i32>,
+    states: BTreeSet<i64>,
     spread_rules: HashSet<String>,
 }
 
@@ -24,7 +24,7 @@ impl Rule {
         self.states = new_states;
     }
 
-    pub fn sum(&self) -> i32 {
+    pub fn sum(&self) -> i64 {
         self.states.iter().sum()
     }
 }
@@ -49,7 +49,7 @@ pub fn input_generator(input: &str) -> Rule {
         .chars()
         .enumerate()
         .filter(|(_, c)| *c == '#')
-        .map(|(i, _)| i as i32)
+        .map(|(i, _)| i as i64)
         .collect();
 
     let spread_rules: HashSet<_> = lines[2..]
@@ -65,7 +65,7 @@ pub fn input_generator(input: &str) -> Rule {
 }
 
 #[aoc(day12, part1)]
-pub fn solve_part1(rule: &Rule) -> i32 {
+pub fn solve_part1(rule: &Rule) -> i64 {
     let mut rule = rule.clone();
     for _ in 0..20 {
         rule.next_generation();
@@ -85,7 +85,12 @@ pub fn solve_part2(rule: &Rule) -> i64 {
         rule.next_generation();
     }
 
-    rule.sum() as i64 + (50000000000i64 - 200) * 80
+    let sum_200 = rule.sum();
+    rule.next_generation();
+    let sum_201 = rule.sum();
+    let diff = sum_201 - sum_200;
+
+    sum_201 + (50000000000i64 - 201) * diff
 }
 
 #[cfg(test)]
