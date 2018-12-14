@@ -5,9 +5,10 @@ os:
   - windows
 rust:
   - nightly
-before_script:
-  - cargo install cargo-aoc
+cache: cargo
 script:
   - cargo build --verbose
   - cargo test --verbose
-  - cargo aoc
+notifications:
+  email:
+    on_success: never
