@@ -27,6 +27,7 @@ pub struct Cart {
     position: Vector2<i32>,
     direction: Vector2<i32>,
     next_rotation: Matrix2<i32>,
+    crashed: bool,
 }
 
 impl Cart {
@@ -35,6 +36,7 @@ impl Cart {
             position,
             direction,
             next_rotation: *TURN_LEFT,
+            crashed: false,
         }
     }
 
@@ -90,39 +92,57 @@ pub struct System {
 }
 
 impl System {
-    pub fn run(&mut self) -> Vector2<i32> {
+    pub fn run_until_first_crash(&mut self) -> Vector2<i32> {
         loop {
-            if let Some(colliding_at) = self.tick() {
-                return colliding_at;
+            let crashed_carts = self.tick();
+            if let Some(pos) = crashed_carts.get(0) {
+                return *pos;
             }
         }
     }
 
-    pub fn tick(&mut self) -> Option<Vector2<i32>> {
+    pub fn run_until_one_cart(&mut self) -> Vector2<i32> {
+        while self.carts.len() > 1 {
+            self.tick();
+        }
+
+        self.carts[0].position
+    }
+
+    pub fn tick(&mut self) -> Vec<Vector2<i32>> {
         self.carts.sort();
 
         for i in 0..self.carts.len() {
             let cart = &mut self.carts[i];
             cart.tick(&self.grid);
 
-            let colliding_result = self.check_collision();
-            if colliding_result.is_some() {
-                return colliding_result;
-            }
+            self.mark_collision();
         }
 
-        None
+        let crashed_carts = self
+            .carts
+            .iter()
+            .filter(|cart| cart.crashed)
+            .map(|cart| cart.position)
+            .collect();
+        self.carts.retain(|cart| !cart.crashed);
+
+        crashed_carts
     }
 
-    pub fn check_collision(&self) -> Option<Vector2<i32>> {
+    pub fn mark_collision(&mut self) {
         let mut set = HashSet::new();
+        let mut colliding_at = HashSet::new();
         for cart in &self.carts {
             if !set.insert(cart.position) {
-                return Some(cart.position);
+                colliding_at.insert(cart.position);
             }
         }
 
-        None
+        self.carts
+            .iter_mut()
+            .filter(|cart| colliding_at.contains(&cart.position))
+            .for_each(|cart| cart.crashed = true);
     }
 }
 
@@ -245,7 +265,13 @@ pub fn input_generator(input: &str) -> System {
 
 #[aoc(day13, part1)]
 pub fn solve_part1(system: &System) -> String {
-    let pos = system.clone().run();
+    let pos = system.clone().run_until_first_crash();
+    format!("{},{}", pos.x, pos.y)
+}
+
+#[aoc(day13, part2)]
+pub fn solve_part2(system: &System) -> String {
+    let pos = system.clone().run_until_one_cart();
     format!("{},{}", pos.x, pos.y)
 }
 
@@ -255,7 +281,13 @@ mod tests {
 
     #[test]
     fn part1() {
-        let mut system = input_generator(include_str!("../tests/day13.txt"));
-        assert_eq!(system.run(), Vector2::new(7, 3));
+        let mut system = input_generator(include_str!("../tests/day13_part1.txt"));
+        assert_eq!(system.run_until_first_crash(), Vector2::new(7, 3));
+    }
+
+    #[test]
+    fn part2() {
+        let mut system = input_generator(include_str!("../tests/day13_part2.txt"));
+        assert_eq!(system.run_until_one_cart(), Vector2::new(6, 4));
     }
 }
