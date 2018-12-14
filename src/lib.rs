@@ -6,6 +6,8 @@ extern crate aoc_runner;
 extern crate aoc_runner_derive;
 extern crate bytecount;
 extern crate chrono;
+#[macro_use]
+extern crate lazy_static;
 extern crate nalgebra as na;
 extern crate rayon;
 extern crate regex;
@@ -14,6 +16,7 @@ pub mod day1;
 pub mod day10;
 pub mod day11;
 pub mod day12;
+pub mod day13;
 pub mod day2;
 pub mod day3;
 pub mod day4;
