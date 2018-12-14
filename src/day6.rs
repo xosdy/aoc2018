@@ -1,4 +1,4 @@
-use cgmath::Vector2;
+use na::Vector2;
 use std::collections::{HashMap, HashSet};
 
 #[aoc_generator(day6)]
@@ -7,10 +7,10 @@ pub fn input_generator(input: &str) -> Vec<Vector2<i32>> {
         .lines()
         .map(|line| {
             let mut axes = line.split(',');
-            Vector2 {
-                x: axes.next().unwrap().trim().parse().unwrap(),
-                y: axes.next().unwrap().trim().parse().unwrap(),
-            }
+            Vector2::new(
+                axes.next().unwrap().trim().parse().unwrap(),
+                axes.next().unwrap().trim().parse().unwrap(),
+            )
         })
         .collect()
 }

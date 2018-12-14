@@ -1,4 +1,4 @@
-use cgmath::Vector2;
+use nalgebra::Vector2;
 use std::collections::{HashMap, HashSet};
 
 pub struct Claim {
@@ -33,14 +33,8 @@ pub fn input_generator(input: &str) -> Vec<Claim> {
                 .map(|n| n.parse().unwrap());
             Claim {
                 id,
-                position: Vector2 {
-                    x: offset.next().unwrap(),
-                    y: offset.next().unwrap(),
-                },
-                size: Vector2 {
-                    x: size.next().unwrap(),
-                    y: size.next().unwrap(),
-                },
+                position: Vector2::new(offset.next().unwrap(), offset.next().unwrap()),
+                size: Vector2::new(size.next().unwrap(), size.next().unwrap()),
             }
         })
         .collect()
@@ -51,7 +45,7 @@ fn gen_grid(claims: &Vec<Claim>) -> HashMap<Vector2<u32>, Status> {
     for claim in claims.iter() {
         for x in claim.position.x..claim.position.x + claim.size.x {
             for y in claim.position.y..claim.position.y + claim.size.y {
-                grid.entry(Vector2 { x, y })
+                grid.entry(Vector2::new(x, y))
                     .and_modify(|e| match e {
                         Status::Valid(id) => *e = Status::Overlap(vec![*id, claim.id]),
                         Status::Overlap(ids) => ids.push(claim.id),

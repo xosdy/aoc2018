@@ -1,4 +1,4 @@
-use cgmath::Vector2;
+use na::Vector2;
 use regex::Regex;
 use std::fmt;
 
@@ -34,11 +34,8 @@ impl Grid {
         let max_y = self.0.iter().map(|p| p.position.y).max().unwrap();
 
         (
-            Vector2 { x: min_x, y: min_y },
-            Vector2 {
-                x: max_x - min_x + 1,
-                y: max_y - min_y + 1,
-            },
+            Vector2::new(min_x, min_y),
+            Vector2::new(max_x - min_x + 1, max_y - min_y + 1),
         )
     }
 }
@@ -50,7 +47,7 @@ impl fmt::Display for Grid {
 
         for y in delta.0.y..delta.0.y + delta.1.y {
             for x in delta.0.x..delta.0.x + delta.1.x {
-                if self.0.iter().any(|p| p.position == Vector2 { x, y }) {
+                if self.0.iter().any(|p| p.position == Vector2::new(x, y)) {
                     s.push('#');
                 } else {
                     s.push('.');
@@ -75,14 +72,8 @@ pub fn input_generator(input: &str) -> Vec<Point> {
                 .collect();
 
             Point {
-                position: Vector2 {
-                    x: result[0],
-                    y: result[1],
-                },
-                velocity: Vector2 {
-                    x: result[2],
-                    y: result[3],
-                },
+                position: Vector2::new(result[0], result[1]),
+                velocity: Vector2::new(result[2], result[3]),
             }
         })
         .collect()

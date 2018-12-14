@@ -5,8 +5,8 @@ extern crate aoc_runner;
 #[macro_use]
 extern crate aoc_runner_derive;
 extern crate bytecount;
-extern crate cgmath;
 extern crate chrono;
+extern crate nalgebra as na;
 extern crate rayon;
 extern crate regex;
 
