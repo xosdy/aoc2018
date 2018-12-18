@@ -56,6 +56,17 @@ impl Scene {
         full_round
     }
 
+    pub fn set_elves_attack_power(&mut self, power: i32) {
+        self.entities
+            .iter_mut()
+            .filter(|e| e.race == Race::Elf)
+            .for_each(|e| e.attack_power = power);
+    }
+
+    pub fn elves_count(&self) -> usize {
+        self.entities.iter().filter(|e| e.race == Race::Elf).count()
+    }
+
     fn get_entity_index(&self, position: &Vector2<usize>) -> Option<usize> {
         self.entities.iter().position(|e| e.position == *position)
     }
@@ -277,6 +288,24 @@ fn solve_part1(scene: &Scene) -> i32 {
     round * hp
 }
 
+#[aoc(day15, part2)]
+fn solve_part2(scene: &Scene) -> i32 {
+    for power in 4..100 {
+        let mut scene = scene.to_owned();
+        scene.set_elves_attack_power(power);
+        let elves_count = scene.elves_count();
+
+        let (round, hp) = outcome(&mut scene);
+        let remaining = scene.elves_count();
+
+        if remaining == elves_count {
+            return round * hp;
+        }
+    }
+
+    unreachable!()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -346,6 +375,7 @@ mod tests {
             (46, 859)
         );
     }
+
     #[test]
     fn test_outcome5() {
         assert_eq!(
@@ -361,6 +391,7 @@ mod tests {
             (35, 793)
         );
     }
+
     #[test]
     fn test_outcome6() {
         assert_eq!(
@@ -376,6 +407,7 @@ mod tests {
             (54, 536)
         );
     }
+
     #[test]
     fn test_outcome7() {
         assert_eq!(
