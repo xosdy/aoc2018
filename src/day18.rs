@@ -33,7 +33,7 @@ impl fmt::Display for Tile {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Grid(Vec<Vec<Tile>>);
 
 impl Grid {
@@ -43,6 +43,23 @@ impl Grid {
 
     pub fn tile_count(&self, tile_type: &Tile) -> usize {
         self.0.iter().flatten().filter(|&t| t == tile_type).count()
+    }
+
+    pub fn run(&mut self, times: usize) {
+        let mut snapshots = vec![];
+
+        for minutes in 1..=times {
+            snapshots.push(self.clone());
+            self.tick();
+
+            if let Some((first_time, _)) = snapshots.iter().enumerate().find(|&(_, g)| g == self) {
+                let interval = minutes - first_time;
+                self.0 = snapshots
+                    .remove(first_time + (times - first_time) % interval)
+                    .0;
+                break;
+            }
+        }
     }
 
     pub fn tick(&mut self) {
@@ -132,9 +149,15 @@ pub fn input_generator(input: &str) -> Grid {
 #[aoc(day18, part1)]
 pub fn solve_part1(grid: &Grid) -> usize {
     let mut grid = grid.to_owned();
-    for _ in 0..10 {
-        grid.tick();
-    }
+    grid.run(10);
+    grid.resource_value()
+}
+
+#[aoc(day18, part2)]
+pub fn solve_part2(grid: &Grid) -> usize {
+    let mut grid = grid.to_owned();
+    grid.run(1000000000);
+
     grid.resource_value()
 }
 
@@ -156,9 +179,7 @@ mod tests {
     #[test]
     fn part1() {
         let mut grid = input_generator(TEST_INPUT);
-        for _go  in 0..10 {
-            grid.tick();
-        }
+        grid.run(10);
         assert_eq!(grid.resource_value(), 1147);
     }
 }
