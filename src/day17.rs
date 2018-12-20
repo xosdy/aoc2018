@@ -53,6 +53,16 @@ impl Grid {
             .filter(|&(p, t)| p.0.y >= min_y && (*t == Tile::FlowingWater || *t == Tile::RestWater))
             .count()
     }
+
+    pub fn rest_water_count(&self) -> usize {
+        let min_y = (self.0.iter().find(|&(_, t)| *t == Tile::Clay).unwrap().0)
+            .0
+            .y;
+        self.0
+            .iter()
+            .filter(|&(p, t)| p.0.y >= min_y && *t == Tile::RestWater)
+            .count()
+    }
 }
 
 impl FromStr for Grid {
@@ -159,6 +169,13 @@ pub fn solve_part1(grid: &Grid) -> usize {
     let mut grid = grid.to_owned();
     fill(&mut grid, &Vec2::new(500, 0), WaterDirection::Both);
     grid.water_count()
+}
+
+#[aoc(day17, part2)]
+pub fn solve_part2(grid: &Grid) -> usize {
+    let mut grid = grid.to_owned();
+    fill(&mut grid, &Vec2::new(500, 0), WaterDirection::Both);
+    grid.rest_water_count()
 }
 
 #[cfg(test)]
