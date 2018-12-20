@@ -197,4 +197,11 @@ y=13, x=498..504";
         fill(&mut grid, &Vec2::new(500, 0), WaterDirection::Both);
         assert_eq!(grid.water_count(), 57);
     }
+
+    #[test]
+    fn part2() {
+        let mut grid = input_generator(TEST_INPUT);
+        fill(&mut grid, &Vec2::new(500, 0), WaterDirection::Both);
+        assert_eq!(grid.rest_water_count(), 29);
+    }
 }
