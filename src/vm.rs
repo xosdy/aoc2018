@@ -15,7 +15,8 @@ impl FromStr for Registers {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, EnumIter)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, EnumIter, EnumString)]
+#[strum(serialize_all = "snake_case")]
 pub enum Opcode {
     Addr,
     Addi,
@@ -35,6 +36,7 @@ pub enum Opcode {
     Eqrr,
 }
 
+#[derive(Debug, Clone)]
 pub struct Instruction {
     opcode: Opcode,
     input1: usize,
@@ -108,5 +110,71 @@ impl Instruction {
                 }
             }
         }
+    }
+}
+
+impl FromStr for Instruction {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut iter = s.split_whitespace();
+
+        macro_rules! parse {
+            ($iter:expr) => {
+                $iter.next().and_then(|part| part.parse().ok()).unwrap()
+            };
+        }
+
+        Ok(Instruction {
+            opcode: parse!(iter),
+            input1: parse!(iter),
+            input2: parse!(iter),
+            output: parse!(iter),
+        })
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Vm {
+    pub registers: Registers,
+    ip_index: usize,
+    program: Vec<Instruction>,
+}
+
+impl Vm {
+    pub fn run(&mut self) {
+        while *self.ip() < self.program.len() {
+            self.step();
+        }
+    }
+
+    fn ip(&mut self) -> &mut usize {
+        self.registers.0.get_mut(self.ip_index).unwrap()
+    }
+
+    fn step(&mut self) {
+        let ip = *self.ip();
+        self.program[ip].execute(&mut self.registers);
+        *self.ip() += 1;
+    }
+}
+
+impl FromStr for Vm {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut line_iter = s.lines();
+        let ip_index = line_iter
+            .next()
+            .and_then(|line| line.split_whitespace().next_back())
+            .and_then(|ip| ip.parse().ok())
+            .unwrap();
+        let program = line_iter.map(|line| line.parse().unwrap()).collect();
+
+        Ok(Vm {
+            registers: Default::default(),
+            ip_index,
+            program,
+        })
     }
 }
