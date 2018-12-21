@@ -20,12 +20,7 @@ pub fn solve_part1(points: &Vec<Vector2<i32>>) -> usize {
     let max_x = points.iter().max_by_key(|p| p.x).unwrap().x as usize + 1;
     let max_y = points.iter().max_by_key(|p| p.y).unwrap().y as usize + 1;
 
-    let mut grid: Vec<Vec<Vec<usize>>> = Vec::with_capacity(max_y);
-    grid.resize_with(max_y, || {
-        let mut v = Vec::with_capacity(max_x);
-        v.resize_default(max_x);
-        v
-    });
+    let mut grid: Vec<Vec<Vec<usize>>> = vec![vec![vec![]; max_x]; max_y];
 
     for y in 0..max_y {
         for x in 0..max_x {

@@ -2,13 +2,13 @@ use std::collections::{BTreeMap, HashSet};
 
 pub type StepTree = BTreeMap<char, Vec<char>>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Worker {
     Idle,
     Busy(Work),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Work {
     handling_step: char,
     remaining_seconds: u32,
@@ -57,8 +57,7 @@ pub fn solve_part1(step_tree: &StepTree) -> String {
 
 #[aoc(day7, part2)]
 pub fn solve_part2(step_tree: &StepTree) -> u32 {
-    let mut workers = Vec::new();
-    workers.resize_with(5, || Worker::Idle);
+    let mut workers = vec![Worker::Idle; 5];
     let mut finished_steps = HashSet::<char>::new();
     let mut working_steps = HashSet::<char>::new();
     let mut total_seconds = 0;
