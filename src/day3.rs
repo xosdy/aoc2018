@@ -40,7 +40,7 @@ pub fn input_generator(input: &str) -> Vec<Claim> {
         .collect()
 }
 
-fn gen_grid(claims: &Vec<Claim>) -> HashMap<Vector2<u32>, Status> {
+fn gen_grid(claims: &[Claim]) -> HashMap<Vector2<u32>, Status> {
     let mut grid = HashMap::<Vector2<u32>, Status>::new();
     for claim in claims.iter() {
         for x in claim.position.x..claim.position.x + claim.size.x {
@@ -59,7 +59,7 @@ fn gen_grid(claims: &Vec<Claim>) -> HashMap<Vector2<u32>, Status> {
 }
 
 #[aoc(day3, part1)]
-pub fn solve_part1(claims: &Vec<Claim>) -> usize {
+pub fn solve_part1(claims: &[Claim]) -> usize {
     let grid = gen_grid(claims);
 
     grid.iter()
@@ -71,7 +71,7 @@ pub fn solve_part1(claims: &Vec<Claim>) -> usize {
 }
 
 #[aoc(day3, part2)]
-pub fn solve_part2(claims: &Vec<Claim>) -> u32 {
+pub fn solve_part2(claims: &[Claim]) -> u32 {
     let grid = gen_grid(claims);
 
     let mut ids: HashSet<u32> = claims.iter().map(|claim| claim.id).collect();

@@ -12,8 +12,8 @@ pub struct Point {
 pub struct Grid(Vec<Point>);
 
 impl Grid {
-    pub fn new(points: &Vec<Point>) -> Grid {
-        Grid(points.clone())
+    pub fn new(points: &[Point]) -> Grid {
+        Grid(points.to_owned())
     }
 
     pub fn update(&mut self) {
@@ -80,7 +80,7 @@ pub fn input_generator(input: &str) -> Vec<Point> {
 }
 
 #[aoc(day10, part1)]
-pub fn solve_part1(points: &Vec<Point>) -> String {
+pub fn solve_part1(points: &[Point]) -> String {
     let mut grid = Grid::new(points);
     loop {
         let height = grid.size().1.y;
@@ -95,7 +95,7 @@ pub fn solve_part1(points: &Vec<Point>) -> String {
 }
 
 #[aoc(day10, part2)]
-pub fn solve_part2(points: &Vec<Point>) -> usize {
+pub fn solve_part2(points: &[Point]) -> usize {
     let mut grid = Grid::new(points);
     for i in 0.. {
         let height = grid.size().1.y;

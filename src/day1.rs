@@ -6,12 +6,12 @@ pub fn input_generator(input: &str) -> Vec<i32> {
 }
 
 #[aoc(day1, part1)]
-pub fn solve_part1(input: &Vec<i32>) -> i32 {
+pub fn solve_part1(input: &[i32]) -> i32 {
     input.iter().sum()
 }
 
 #[aoc(day1, part2)]
-pub fn solve_part2(input: &Vec<i32>) -> i32 {
+pub fn solve_part2(input: &[i32]) -> i32 {
     let mut records = HashSet::new();
     records.insert(0);
     let mut current_frequency = 0;

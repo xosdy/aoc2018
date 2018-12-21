@@ -16,7 +16,7 @@ pub fn input_generator(input: &str) -> Vec<Vector2<i32>> {
 }
 
 #[aoc(day6, part1)]
-pub fn solve_part1(points: &Vec<Vector2<i32>>) -> usize {
+pub fn solve_part1(points: &[Vector2<i32>]) -> usize {
     let max_x = points.iter().max_by_key(|p| p.x).unwrap().x as usize + 1;
     let max_y = points.iter().max_by_key(|p| p.y).unwrap().y as usize + 1;
 
@@ -49,20 +49,19 @@ pub fn solve_part1(points: &Vec<Vector2<i32>>) -> usize {
             infinite_point_indices.insert(grid[max_y - 1][x][0]);
         }
     }
-    for y in 0..max_y {
-        if grid[y][0].len() == 1 {
-            infinite_point_indices.insert(grid[y][0][0]);
+    for row in grid.iter().take(max_y) {
+        if row[0].len() == 1 {
+            infinite_point_indices.insert(row[0][0]);
         }
 
-        if grid[y][max_x - 1].len() == 1 {
-            infinite_point_indices.insert(grid[y][max_x - 1][0]);
+        if row[max_x - 1].len() == 1 {
+            infinite_point_indices.insert(row[max_x - 1][0]);
         }
     }
 
     let mut finite_point_count: HashMap<usize, usize> = HashMap::new();
-    for y in 1..max_y - 1 {
-        for x in 1..max_x - 1 {
-            let points = &grid[y][x];
+    for row in grid.iter().take(max_y - 1).skip(1) {
+        for points in row.iter().take(max_x - 1).skip(1) {
             if points.len() == 1 && !infinite_point_indices.contains(&points[0]) {
                 finite_point_count
                     .entry(points[0])
@@ -75,7 +74,7 @@ pub fn solve_part1(points: &Vec<Vector2<i32>>) -> usize {
     *finite_point_count.iter().max_by_key(|&(_, v)| v).unwrap().1
 }
 
-fn in_distance_count(points: &Vec<Vector2<i32>>, limit: usize) -> usize {
+fn in_distance_count(points: &[Vector2<i32>], limit: usize) -> usize {
     let offset = (limit / points.len()) as i32;
 
     let min_x = points.iter().min_by_key(|p| p.x).unwrap().x - offset;
@@ -97,7 +96,7 @@ fn in_distance_count(points: &Vec<Vector2<i32>>, limit: usize) -> usize {
 }
 
 #[aoc(day6, part2)]
-pub fn solve_part2(points: &Vec<Vector2<i32>>) -> usize {
+pub fn solve_part2(points: &[Vector2<i32>]) -> usize {
     in_distance_count(points, 10000)
 }
 

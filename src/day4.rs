@@ -55,7 +55,7 @@ pub fn input_generator(input: &str) -> Vec<Record> {
     records
 }
 
-pub fn get_sleep_times_by_guard(records: &Vec<Record>) -> HashMap<u32, [u32; 60]> {
+pub fn get_sleep_times_by_guard(records: &[Record]) -> HashMap<u32, [u32; 60]> {
     let mut sleep_times_by_guard = HashMap::<u32, [u32; 60]>::new();
 
     for record in records {
@@ -64,7 +64,7 @@ pub fn get_sleep_times_by_guard(records: &Vec<Record>) -> HashMap<u32, [u32; 60]
             .and_modify(|sleep_times| {
                 for interval in &record.time_intervals {
                     for i in interval.clone() {
-                        sleep_times[i as usize] = sleep_times[i as usize] + 1;
+                        sleep_times[i as usize] += 1;
                     }
                 }
             })
@@ -83,7 +83,7 @@ pub fn get_sleep_times_by_guard(records: &Vec<Record>) -> HashMap<u32, [u32; 60]
 }
 
 #[aoc(day4, part1)]
-pub fn solve_part1(records: &Vec<Record>) -> u32 {
+pub fn solve_part1(records: &[Record]) -> u32 {
     let sleep_times_by_guard = get_sleep_times_by_guard(records);
     let guard_with_max_minutes = sleep_times_by_guard
         .iter()
@@ -101,7 +101,7 @@ pub fn solve_part1(records: &Vec<Record>) -> u32 {
 }
 
 #[aoc(day4, part2)]
-pub fn solve_part2(records: &Vec<Record>) -> u32 {
+pub fn solve_part2(records: &[Record]) -> u32 {
     let sleep_times_by_guard = get_sleep_times_by_guard(records);
     let (guard, times, _) = sleep_times_by_guard
         .iter()

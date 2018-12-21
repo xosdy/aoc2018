@@ -4,13 +4,6 @@ pub struct Recipes {
 }
 
 impl Recipes {
-    pub fn new() -> Recipes {
-        Recipes {
-            elves: vec![0, 1],
-            scores: vec![3, 7],
-        }
-    }
-
     pub fn tick(&mut self) {
         let new_recipes: u32 = self.elves.iter().map(|&e| self.scores[e]).sum();
         self.scores.extend(
@@ -26,10 +19,19 @@ impl Recipes {
     }
 }
 
+impl Default for Recipes {
+    fn default() -> Self {
+        Recipes {
+            elves: vec![0, 1],
+            scores: vec![3, 7],
+        }
+    }
+}
+
 #[aoc(day14, part1)]
 pub fn solve_part1(recipe_count: &str) -> String {
     let recipe_count = recipe_count.parse().unwrap();
-    let mut recipes = Recipes::new();
+    let mut recipes: Recipes = Default::default();
     while recipes.scores.len() < recipe_count + 10 {
         recipes.tick();
     }
@@ -47,7 +49,7 @@ pub fn solve_part2(digits: &str) -> usize {
         .chars()
         .map(|d| d.to_digit(10).unwrap())
         .collect();
-    let mut recipes = Recipes::new();
+    let mut recipes: Recipes = Default::default();
 
     loop {
         if recipes.scores.ends_with(&digits) {

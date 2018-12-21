@@ -11,7 +11,7 @@ pub struct Sample {
     after: Registers,
 }
 
-pub fn guess_opcode(samples: &Vec<Sample>) -> HashMap<usize, Opcode> {
+pub fn guess_opcode(samples: &[Sample]) -> HashMap<usize, Opcode> {
     let mut match_opcodes: Vec<HashSet<Opcode>> = vec![HashSet::new(); OPCODE_COUNT];
     for op_code in 0..OPCODE_COUNT {
         let sets: Vec<HashSet<Opcode>> = samples
@@ -33,10 +33,7 @@ pub fn guess_opcode(samples: &Vec<Sample>) -> HashMap<usize, Opcode> {
 
         match_opcodes[op_code] = Opcode::iter().collect();
         for set in sets {
-            match_opcodes[op_code] = match_opcodes[op_code]
-                .intersection(&set)
-                .map(|op| op.clone())
-                .collect();
+            match_opcodes[op_code] = match_opcodes[op_code].intersection(&set).cloned().collect();
         }
     }
 
@@ -126,7 +123,7 @@ pub fn input_generator(input: &str) -> Input {
 
     Input {
         samples,
-        raw_program: raw_program,
+        raw_program,
     }
 }
 
@@ -157,7 +154,7 @@ pub fn part2(input: &Input) -> usize {
     input
         .raw_program
         .iter()
-        .map(|i| Instruction::new(opcode_map.get(&i.0[0]).unwrap().clone(), &i.0[1..4]))
+        .map(|i| Instruction::new(opcode_map[&i.0[0]].clone(), &i.0[1..4]))
         .for_each(|i| i.execute(&mut registers));
 
     registers.0[0]

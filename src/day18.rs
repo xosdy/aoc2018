@@ -64,25 +64,25 @@ impl Grid {
 
     pub fn tick(&mut self) {
         let mut new_grid = self.0.clone();
-        for y in 0..self.0.len() {
-            for x in 0..self.0[0].len() {
+        for (y, row) in new_grid.iter_mut().enumerate() {
+            for (x, tile) in row.iter_mut().enumerate() {
                 let stats = self.adjacent(x, y);
                 match self.0[y][x] {
                     Tile::Open => {
                         if *stats.get(&Tile::Trees).unwrap_or(&0) >= 3 {
-                            new_grid[y][x] = Tile::Trees;
+                            *tile = Tile::Trees;
                         }
                     }
                     Tile::Trees => {
                         if *stats.get(&Tile::Lumberyard).unwrap_or(&0) >= 3 {
-                            new_grid[y][x] = Tile::Lumberyard;
+                            *tile = Tile::Lumberyard;
                         }
                     }
                     Tile::Lumberyard => {
                         if *stats.get(&Tile::Lumberyard).unwrap_or(&0) == 0
                             || *stats.get(&Tile::Trees).unwrap_or(&0) == 0
                         {
-                            new_grid[y][x] = Tile::Open;
+                            *tile = Tile::Open;
                         }
                     }
                 }
@@ -156,7 +156,7 @@ pub fn solve_part1(grid: &Grid) -> usize {
 #[aoc(day18, part2)]
 pub fn solve_part2(grid: &Grid) -> usize {
     let mut grid = grid.to_owned();
-    grid.run(1000000000);
+    grid.run(1_000_000_000);
 
     grid.resource_value()
 }

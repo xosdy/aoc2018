@@ -25,7 +25,7 @@ impl Node {
     }
 
     pub fn value(&self) -> usize {
-        if self.children.len() == 0 {
+        if self.children.is_empty() {
             self.sum_metadata()
         } else {
             self.metadata

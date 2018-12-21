@@ -117,7 +117,7 @@ impl Scene {
     }
 
     fn is_inside(&self, position: &Vector2<usize>) -> bool {
-        self.grid.len() > 0 && self.grid.len() > position.y && self.grid[0].len() > position.x
+        !self.grid.is_empty() && self.grid.len() > position.y && self.grid[0].len() > position.x
     }
 
     fn get_distances(&self, start: &Vector2<usize>) -> HashMap<Vector2<usize>, usize> {
@@ -138,8 +138,8 @@ impl Scene {
                     continue;
                 }
 
-                open_set.push_back(s.clone());
-                distances.insert(s, *distances.get(&p).unwrap() + 1);
+                open_set.push_back(s);
+                distances.insert(s, distances[&p] + 1);
             }
 
             closed_set.insert(p);
@@ -197,7 +197,7 @@ impl fmt::Display for Scene {
 
         for e in &self.entities {
             lines[e.position.y].replace_range(
-                e.position.x..e.position.x + 1,
+                e.position.x..=e.position.x,
                 match e.race {
                     Race::Goblin => "G",
                     Race::Elf => "E",

@@ -90,7 +90,7 @@ pub fn solve_part2(rule: &Rule) -> i64 {
     let sum_201 = rule.sum();
     let diff = sum_201 - sum_200;
 
-    sum_201 + (50000000000i64 - 201) * diff
+    sum_201 + (50_000_000_000i64 - 201) * diff
 }
 
 #[cfg(test)]

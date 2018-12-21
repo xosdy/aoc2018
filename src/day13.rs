@@ -239,7 +239,7 @@ impl fmt::Display for System {
 
         for cart in &self.carts {
             lines[cart.position.y as usize].replace_range(
-                cart.position.x as usize..cart.position.x as usize + 1,
+                cart.position.x as usize..=cart.position.x as usize,
                 if cart.direction == Vector2::new(0, -1) {
                     "^"
                 } else if cart.direction == Vector2::new(0, 1) {

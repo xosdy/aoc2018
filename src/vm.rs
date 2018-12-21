@@ -149,7 +149,7 @@ impl Vm {
     }
 
     pub fn ip(&mut self) -> &mut usize {
-        self.registers.0.get_mut(self.ip_index).unwrap()
+        &mut self.registers.0[self.ip_index]
     }
 
     pub fn step(&mut self) {
