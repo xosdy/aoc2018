@@ -148,11 +148,11 @@ impl Vm {
         }
     }
 
-    fn ip(&mut self) -> &mut usize {
+    pub fn ip(&mut self) -> &mut usize {
         self.registers.0.get_mut(self.ip_index).unwrap()
     }
 
-    fn step(&mut self) {
+    pub fn step(&mut self) {
         let ip = *self.ip();
         self.program[ip].execute(&mut self.registers);
         *self.ip() += 1;
