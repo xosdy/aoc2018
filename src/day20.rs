@@ -1,9 +1,9 @@
 use na::Vector2;
 use std::collections::HashMap;
+use std::collections::HashSet;
+use std::collections::VecDeque;
 use std::fmt;
 use std::str::FromStr;
-use std::collections::VecDeque;
-use std::collections::HashSet;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Tile {
@@ -27,15 +27,24 @@ impl fmt::Display for Tile {
 pub struct Grid(HashMap<Vector2<i32>, Tile>);
 
 impl Grid {
-    pub fn pass_most_door(&self) -> usize {
+    pub fn pass_most_doors(&self) -> usize {
         let distances = self.get_distances(Vector2::zeros());
-        let d = distances
+        distances
             .iter()
             .filter(|(p, _)| self.0.get(p) == Some(&Tile::Room))
-            .map(|(_, d)| d)
+            .map(|(_, d)| d / 2)
             .max()
-            .unwrap();
-        d / 2
+            .unwrap()
+    }
+
+    pub fn pass_doors_more_than(&self, num: usize) -> usize {
+        let distances = self.get_distances(Vector2::zeros());
+        distances
+            .iter()
+            .filter(|(p, _)| self.0.get(p) == Some(&Tile::Room))
+            .map(|(_, d)| d / 2)
+            .filter(|&d| d >= num)
+            .count()
     }
 
     fn add_room(&mut self, mut current: Vector2<i32>, direction: Vector2<i32>) -> Vector2<i32> {
@@ -145,7 +154,12 @@ pub fn input_generator(input: &str) -> Grid {
 
 #[aoc(day20, part1)]
 pub fn solve_part1(grid: &Grid) -> usize {
-    grid.pass_most_door()
+    grid.pass_most_doors()
+}
+
+#[aoc(day20, part2)]
+pub fn solve_part2(grid: &Grid) -> usize {
+    grid.pass_doors_more_than(1000)
 }
 
 #[cfg(test)]
@@ -167,7 +181,7 @@ mod tests {
     fn part1() {
         for &&(input, expect) in TEST_INPUTS {
             let grid: Grid = input.parse().unwrap();
-            assert_eq!(grid.pass_most_door(), expect);
+            assert_eq!(grid.pass_most_doors(), expect);
         }
     }
 }
