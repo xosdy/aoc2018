@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 pub const OPCODE_COUNT: usize = 16;
 
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Registers(pub Vec<usize>);
 
 impl FromStr for Registers {
@@ -12,6 +12,12 @@ impl FromStr for Registers {
         let mut reg: Registers = Default::default();
         reg.0 = s.split(',').map(|s| s.trim().parse().unwrap()).collect();
         Ok(reg)
+    }
+}
+
+impl Default for Registers {
+    fn default() -> Self {
+        Registers(vec![0; 6])
     }
 }
 
