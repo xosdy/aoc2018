@@ -44,10 +44,10 @@ pub enum Opcode {
 
 #[derive(Debug, Clone)]
 pub struct Instruction {
-    opcode: Opcode,
-    input1: usize,
-    input2: usize,
-    output: usize,
+    pub opcode: Opcode,
+    pub input1: usize,
+    pub input2: usize,
+    pub output: usize,
 }
 
 impl Instruction {
@@ -143,8 +143,8 @@ impl FromStr for Instruction {
 #[derive(Debug, Clone)]
 pub struct Vm {
     pub registers: Registers,
+    pub program: Vec<Instruction>,
     ip_index: usize,
-    program: Vec<Instruction>,
 }
 
 impl Vm {

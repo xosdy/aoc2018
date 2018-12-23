@@ -7,5 +7,5 @@ pub fn solve_part1(input: &str) -> usize {
         vm.step();
     }
 
-    vm.registers.0[3]
+    vm.registers.0[vm.program[28].input1]
 }
