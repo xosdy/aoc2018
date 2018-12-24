@@ -5,6 +5,8 @@ extern crate lazy_static;
 extern crate nalgebra as na;
 #[macro_use]
 extern crate strum_macros;
+#[macro_use]
+extern crate num_derive;
 
 pub mod vm;
 
@@ -22,6 +24,7 @@ pub mod day19;
 pub mod day2;
 pub mod day20;
 pub mod day21;
+pub mod day22;
 pub mod day3;
 pub mod day4;
 pub mod day5;
