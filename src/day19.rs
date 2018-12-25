@@ -13,8 +13,7 @@ pub fn factorization(num: usize) -> Vec<usize> {
 
 #[aoc_generator(day19)]
 pub fn input_generator(input: &str) -> Vm {
-    let mut vm: Vm = input.parse().unwrap();
-    vm
+    input.parse().unwrap()
 }
 
 #[aoc(day19, part1)]
