@@ -1,13 +1,50 @@
 use na::Vector2;
-use std::collections::HashMap;
-use strum::EnumCount;
+use std::cmp::Ordering;
+use std::collections::{BinaryHeap, HashMap, HashSet};
+use strum::{EnumCount, IntoEnumIterator};
 
-#[derive(EnumCount, FromPrimitive)]
+#[derive(Debug, Clone, Copy, EnumCount, EnumIter, FromPrimitive)]
 pub enum RegionType {
     Rocky = 0,
     Wet = 1,
     Narrow = 2,
 }
+
+#[derive(Debug, Clone, Copy, EnumIter, PartialEq, Eq, Hash)]
+pub enum Tool {
+    Neither = 0,
+    Torch = 1,
+    ClimbingGear = 2,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct PositionAndTool {
+    position: Vector2<usize>,
+    tool: Tool,
+}
+
+#[derive(Debug)]
+pub struct MinScored(usize, PositionAndTool);
+
+impl Ord for MinScored {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.0.cmp(&other.0).reverse()
+    }
+}
+
+impl PartialOrd for MinScored {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for MinScored {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other) == Ordering::Equal
+    }
+}
+
+impl Eq for MinScored {}
 
 #[derive(Debug, Clone)]
 pub struct Cave {
@@ -66,6 +103,73 @@ impl Cave {
 
         sum
     }
+
+    pub fn spent_minutes(&mut self) -> usize {
+        let mut visited = HashSet::new();
+        let mut visit_next = BinaryHeap::new();
+        visit_next.push(MinScored(
+            0,
+            PositionAndTool {
+                position: Vector2::zeros(),
+                tool: Tool::Torch,
+            },
+        ));
+
+        let target = PositionAndTool {
+            position: self.target,
+            tool: Tool::Torch,
+        };
+
+        while let Some(MinScored(minutes, current)) = visit_next.pop() {
+            // println!("{} {} {} {:?}", minutes, current.position.x, current.position.y, current.tool);
+            if visited.contains(&current) {
+                continue;
+            }
+
+            if current == target {
+                return minutes;
+            }
+
+            for tool in Tool::iter() {
+                if tool != current.tool
+                    && tool as usize != self.region_type(current.position) as usize
+                {
+                    visit_next.push(MinScored(
+                        minutes + 7,
+                        PositionAndTool {
+                            position: current.position,
+                            tool,
+                        },
+                    ));
+                }
+            }
+
+            for (dx, dy) in &[(-1, 0), (1, 0), (0, -1), (0, 1)] {
+                let new_x = current.position.x as i64 + dx;
+                let new_y = current.position.y as i64 + dy;
+                if new_x < 0 || new_y < 0 {
+                    continue;
+                }
+
+                let position = Vector2::new(new_x as usize, new_y as usize);
+                if self.region_type(position) as usize == current.tool as usize {
+                    continue;
+                }
+
+                visit_next.push(MinScored(
+                    minutes + 1,
+                    PositionAndTool {
+                        position,
+                        tool: current.tool,
+                    },
+                ));
+            }
+
+            visited.insert(current);
+        }
+
+        unreachable!()
+    }
 }
 
 #[aoc_generator(day22)]
@@ -94,6 +198,12 @@ pub fn solve_part1(cave: &Cave) -> usize {
     cave.risk_level(cave.target)
 }
 
+#[aoc(day22, part2)]
+pub fn solve_part2(cave: &Cave) -> usize {
+    let mut cave = cave.to_owned();
+    cave.spent_minutes()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -102,5 +212,11 @@ mod tests {
     fn part1() {
         let mut cave = Cave::new(510, Vector2::new(10, 10));
         assert_eq!(cave.risk_level(cave.target), 114);
+    }
+
+    #[test]
+    fn part2() {
+        let mut cave = Cave::new(510, Vector2::new(10, 10));
+        assert_eq!(cave.spent_minutes(), 45);
     }
 }
