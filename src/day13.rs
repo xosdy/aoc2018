@@ -208,8 +208,8 @@ impl FromStr for System {
             {
                 grid[cart.position.y as usize][cart.position.x as usize] = Tile::Vertical;
             } else {
-                dbg!(&grid);
-                dbg!(&cart);
+                eprintln!("{:?}", &grid);
+                eprintln!("{:?}", &cart);
                 unimplemented!();
             }
         }

@@ -4,7 +4,12 @@ os:
   - osx
   - windows
 rust:
+  - stable
+  - beta
   - nightly
+matrix:
+  allow_failures:
+    - rust: nightly
 cache: cargo
 script:
   - cargo build --verbose
