@@ -1,9 +1,10 @@
 use na::Vector2;
+use num_derive::FromPrimitive;
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};
 use strum::{EnumCount, IntoEnumIterator};
 
-#[derive(Debug, Clone, Copy, EnumCount, EnumIter, FromPrimitive)]
+#[derive(Debug, Clone, Copy, EnumCount, FromPrimitive)]
 pub enum RegionType {
     Rocky = 0,
     Wet = 1,
@@ -67,9 +68,7 @@ impl Cave {
             return index;
         }
 
-        let index = if region.x == 0 && region.y == 0 {
-            0
-        } else if region == self.target {
+        let index = if (region.x == 0 && region.y == 0) || region == self.target {
             0
         } else if region.y == 0 {
             region.x * 16807

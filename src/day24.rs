@@ -51,15 +51,15 @@ impl FromStr for Group {
         const IMMUNITY_PREFIX: &str = "immune to ";
 
         if let Some(attr_str) = caps.get(4) {
-            for attr in attr_str.as_str().split(";").map(str::trim) {
+            for attr in attr_str.as_str().split(';').map(str::trim) {
                 if attr.starts_with(WEAKNESS_PREFIX) {
                     weaknesses = attr[WEAKNESS_PREFIX.len()..]
-                        .split(",")
+                        .split(',')
                         .map(|s| s.trim().to_owned())
                         .collect();
                 } else if attr.starts_with(IMMUNITY_PREFIX) {
                     immunities = attr[IMMUNITY_PREFIX.len()..]
-                        .split(",")
+                        .split(',')
                         .map(|s| s.trim().to_owned())
                         .collect();
                 }
@@ -155,7 +155,7 @@ pub fn input_generator(input: &str) -> Vec<Group> {
 }
 
 #[aoc(day24, part1)]
-pub fn solve_part1(groups: &Vec<Group>) -> usize {
+pub fn solve_part1(groups: &[Group]) -> usize {
     battle(groups.to_owned())
 }
 

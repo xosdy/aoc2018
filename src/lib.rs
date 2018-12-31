@@ -1,12 +1,8 @@
 #[macro_use]
 extern crate aoc_runner_derive;
-#[macro_use]
-extern crate lazy_static;
 extern crate nalgebra as na;
 #[macro_use]
 extern crate strum_macros;
-#[macro_use]
-extern crate num_derive;
 
 pub mod vm;
 

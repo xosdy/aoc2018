@@ -1,3 +1,4 @@
+use lazy_static::lazy_static;
 use na::{Matrix2, Vector2};
 use std::cmp::Ordering;
 use std::collections::HashSet;
@@ -52,6 +53,7 @@ impl Cart {
         }
     }
 
+    #[allow(clippy::ptr_arg)]
     pub fn tick(&mut self, grid: &Grid) {
         self.position += self.direction;
 

@@ -101,6 +101,7 @@ impl fmt::Display for Grid {
     }
 }
 
+#[derive(Clone, Copy)]
 pub enum WaterDirection {
     Both,
     Left,

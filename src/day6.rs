@@ -15,6 +15,7 @@ pub fn input_generator(input: &str) -> Vec<Vector2<i32>> {
         .collect()
 }
 
+#[allow(clippy::needless_range_loop)]
 #[aoc(day6, part1)]
 pub fn solve_part1(points: &[Vector2<i32>]) -> usize {
     let max_x = points.iter().max_by_key(|p| p.x).unwrap().x as usize + 1;

@@ -14,6 +14,7 @@ pub struct Work {
     remaining_seconds: u32,
 }
 
+#[allow(clippy::or_fun_call)]
 #[aoc_generator(day7)]
 pub fn input_generator(input: &str) -> Box<StepTree> {
     let mut step_tree: StepTree = BTreeMap::new();

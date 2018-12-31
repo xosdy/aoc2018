@@ -40,6 +40,7 @@ pub fn input_generator(input: &str) -> Vec<Claim> {
         .collect()
 }
 
+#[allow(clippy::or_fun_call)]
 fn gen_grid(claims: &[Claim]) -> HashMap<Vector2<u32>, Status> {
     let mut grid = HashMap::<Vector2<u32>, Status>::new();
     for claim in claims.iter() {

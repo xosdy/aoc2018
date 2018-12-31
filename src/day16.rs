@@ -13,10 +13,10 @@ pub struct Sample {
 
 pub fn guess_opcode(samples: &[Sample]) -> HashMap<usize, Opcode> {
     let mut match_opcodes: Vec<HashSet<Opcode>> = vec![HashSet::new(); OPCODE_COUNT];
-    for op_code in 0..OPCODE_COUNT {
+    for (opcode, possible_opcodes) in match_opcodes.iter_mut().enumerate() {
         let sets: Vec<HashSet<Opcode>> = samples
             .iter()
-            .filter(|s| s.unknown_instruction.0[0] == op_code)
+            .filter(|s| s.unknown_instruction.0[0] == opcode)
             .map(|s| {
                 Opcode::iter()
                     .filter(|op| {
@@ -31,9 +31,9 @@ pub fn guess_opcode(samples: &[Sample]) -> HashMap<usize, Opcode> {
             })
             .collect();
 
-        match_opcodes[op_code] = Opcode::iter().collect();
+        *possible_opcodes = Opcode::iter().collect();
         for set in sets {
-            match_opcodes[op_code] = match_opcodes[op_code].intersection(&set).cloned().collect();
+            *possible_opcodes = possible_opcodes.intersection(&set).cloned().collect();
         }
     }
 
