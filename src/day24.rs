@@ -4,9 +4,16 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::str::FromStr;
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum Clan {
+    None,
+    ImmuneSystem,
+    Infection,
+}
+
 #[derive(Debug, Clone)]
 pub struct Group {
-    clan: String,
+    clan: Clan,
     units: usize,
     hp_per_unit: usize,
     initiative: usize,
@@ -67,7 +74,7 @@ impl FromStr for Group {
         }
 
         Ok(Group {
-            clan: String::new(),
+            clan: Clan::None,
             units: caps[1].parse()?,
             hp_per_unit: caps[2].parse()?,
             initiative: caps[7].parse()?,
@@ -79,7 +86,7 @@ impl FromStr for Group {
     }
 }
 
-pub fn battle(mut groups: Vec<Group>) -> usize {
+pub fn battle(mut groups: Vec<Group>) -> (Clan, usize) {
     loop {
         groups.sort_by_key(|x| (Reverse(x.power()), Reverse(x.initiative)));
         let mut targets = vec![None; groups.len()];
@@ -101,6 +108,7 @@ pub fn battle(mut groups: Vec<Group>) -> usize {
             }
         }
 
+        let mut any_die = false;
         let mut attackers: Vec<_> = (0..groups.len()).collect();
         attackers.sort_by_key(|&i| Reverse(groups[i].initiative));
         for attacker_idx in attackers {
@@ -110,9 +118,12 @@ pub fn battle(mut groups: Vec<Group>) -> usize {
 
             if let Some(defender_idx) = targets[attacker_idx] {
                 let damage = groups[attacker_idx].damage_to(&groups[defender_idx]);
-                groups[defender_idx].units = groups[defender_idx]
-                    .units
-                    .saturating_sub(damage / groups[defender_idx].hp_per_unit);
+                if damage >= groups[defender_idx].hp_per_unit {
+                    groups[defender_idx].units = groups[defender_idx]
+                        .units
+                        .saturating_sub(damage / groups[defender_idx].hp_per_unit);
+                    any_die = true;
+                }
             }
         }
 
@@ -127,10 +138,15 @@ pub fn battle(mut groups: Vec<Group>) -> usize {
                     .or_insert(group.units);
             });
 
-        if stats.get("Immune System").is_none() {
-            return stats["Infection"];
-        } else if stats.get("Infection").is_none() {
-            return stats["Immune System"];
+        if !any_die {
+            return (
+                Clan::None,
+                stats[&Clan::ImmuneSystem] + stats[&Clan::Infection],
+            );
+        } else if stats.get(&Clan::ImmuneSystem).is_none() {
+            return (Clan::Infection, stats[&Clan::Infection]);
+        } else if stats.get(&Clan::Infection).is_none() {
+            return (Clan::ImmuneSystem, stats[&Clan::ImmuneSystem]);
         }
     }
 }
@@ -145,7 +161,11 @@ pub fn input_generator(input: &str) -> Vec<Group> {
         let clan = iter.next().unwrap().trim_end_matches(":");
         let clan_groups = iter.map(move |line| {
             let mut group: Group = line.parse().unwrap();
-            group.clan = clan.to_owned();
+            group.clan = match clan {
+                "Immune System" => Clan::ImmuneSystem,
+                "Infection" => Clan::Infection,
+                _ => unreachable!(),
+            };
             group
         });
         groups.extend(clan_groups);
@@ -156,23 +176,48 @@ pub fn input_generator(input: &str) -> Vec<Group> {
 
 #[aoc(day24, part1)]
 pub fn solve_part1(groups: &[Group]) -> usize {
-    battle(groups.to_owned())
+    battle(groups.to_owned()).1
+}
+
+#[aoc(day24, part2)]
+pub fn solve_part2(groups: &[Group]) -> usize {
+    for boost in 0.. {
+        let mut groups = groups.to_owned();
+        groups
+            .iter_mut()
+            .filter(|x| x.clan == Clan::ImmuneSystem)
+            .for_each(|x| x.attack_damage += boost);
+        let (winner, remaining) = battle(groups);
+
+        if winner == Clan::ImmuneSystem {
+            return remaining;
+        }
+    }
+
+    unreachable!()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    #[test]
-    fn part1() {
-        let input = r"Immune System:
+    const TEST_INPUT: &str = r"Immune System:
 17 units each with 5390 hit points (weak to radiation, bludgeoning) with an attack that does 4507 fire damage at initiative 2
 989 units each with 1274 hit points (immune to fire; weak to bludgeoning, slashing) with an attack that does 25 slashing damage at initiative 3
 
 Infection:
 801 units each with 4706 hit points (weak to radiation) with an attack that does 116 bludgeoning damage at initiative 1
 4485 units each with 2961 hit points (immune to radiation; weak to fire, cold) with an attack that does 12 slashing damage at initiative 4";
-        let groups = input_generator(input);
-        assert_eq!(battle(groups), 5216);
+
+    #[test]
+    fn part1() {
+        let groups = input_generator(TEST_INPUT);
+        assert_eq!(solve_part1(&groups), 5216);
+    }
+
+    #[test]
+    fn part2() {
+        let groups = input_generator(TEST_INPUT);
+        assert_eq!(solve_part2(&groups), 51);
     }
 }
