@@ -30,7 +30,6 @@ pub fn input_generator(input: &str) -> Vec<Vector4<i32>> {
 
 #[aoc(day25, part1)]
 pub fn solve_part1(points: &[Vector4<i32>]) -> usize {
-    // println!("{:#?}", points);
     let mut constellations: Vec<Option<Vec<Vector4<i32>>>> =
         points.iter().map(|&p| Some(vec![p])).collect();
 
