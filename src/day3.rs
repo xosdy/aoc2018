@@ -7,7 +7,7 @@ pub struct Claim {
     size: Vector2<u32>,
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq)]
 pub enum Status {
     Valid(u32),
     Overlap(Vec<u32>),

@@ -59,16 +59,10 @@ impl FromStr for Group {
 
         if let Some(attr_str) = caps.get(4) {
             for attr in attr_str.as_str().split(';').map(str::trim) {
-                if attr.starts_with(WEAKNESS_PREFIX) {
-                    weaknesses = attr[WEAKNESS_PREFIX.len()..]
-                        .split(',')
-                        .map(|s| s.trim().to_owned())
-                        .collect();
-                } else if attr.starts_with(IMMUNITY_PREFIX) {
-                    immunities = attr[IMMUNITY_PREFIX.len()..]
-                        .split(',')
-                        .map(|s| s.trim().to_owned())
-                        .collect();
+                if let Some(types) = attr.strip_prefix(WEAKNESS_PREFIX) {
+                    weaknesses = types.split(',').map(|s| s.trim().to_owned()).collect();
+                } else if let Some(types) = attr.strip_prefix(IMMUNITY_PREFIX) {
+                    immunities = types.split(',').map(|s| s.trim().to_owned()).collect();
                 }
             }
         }
@@ -158,7 +152,7 @@ pub fn input_generator(input: &str) -> Vec<Group> {
 
     for army in armies_iter {
         let mut iter = army.lines();
-        let clan = iter.next().unwrap().trim_end_matches(":");
+        let clan = iter.next().unwrap().trim_end_matches(':');
         let clan_groups = iter.map(move |line| {
             let mut group: Group = line.parse().unwrap();
             group.clan = match clan {

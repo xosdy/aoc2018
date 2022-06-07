@@ -1,6 +1,6 @@
 use na::Vector2;
 use std::collections::{HashMap, HashSet, VecDeque};
-use std::fmt;
+use std::fmt::{self, Write as _};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Tile {
@@ -109,11 +109,11 @@ impl Scene {
             return false;
         }
 
-        self.entities
+        !self
+            .entities
             .iter()
             .filter(|e| e.is_alive())
-            .find(|e| e.position == *position)
-            .is_none()
+            .any(|e| e.position == *position)
     }
 
     fn is_inside(&self, position: &Vector2<usize>) -> bool {
@@ -159,7 +159,7 @@ impl Scene {
     }
 
     fn nearest_step(&self, me: &Vector2<usize>, enemy: &Vector2<usize>) -> Option<Vector2<usize>> {
-        let distances = self.get_distances(&enemy);
+        let distances = self.get_distances(enemy);
         self.get_adjacent_tiles(me)
             .into_iter()
             .filter(|p| self.is_empty(p))
@@ -203,7 +203,7 @@ impl fmt::Display for Scene {
                     Race::Elf => "E",
                 },
             );
-            lines[e.position.y].push_str(&format!(" {:?}({})", e.race, e.hp));
+            write!(lines[e.position.y], " {:?}({})", e.race, e.hp)?
         }
 
         writeln!(f, "{}", lines.join("\n"))

@@ -183,9 +183,9 @@ pub fn input_generator(input: &str) -> Cave {
     let target = iter
         .next()
         .and_then(|s| s.split_whitespace().next_back())
-        .and_then(|p| {
+        .map(|p| {
             let xy: Vec<_> = p.split(',').map(|x| x.parse().unwrap()).collect();
-            Some(Vector2::new(xy[0], xy[1]))
+            Vector2::new(xy[0], xy[1])
         })
         .unwrap();
 

@@ -9,9 +9,9 @@ impl FromStr for Registers {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut reg: Registers = Default::default();
-        reg.0 = s.split(',').map(|s| s.trim().parse().unwrap()).collect();
-        Ok(reg)
+        Ok(Registers(
+            s.split(',').map(|s| s.trim().parse().unwrap()).collect(),
+        ))
     }
 }
 

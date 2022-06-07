@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 use std::fmt;
 use std::str::FromStr;
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Vec2(Vector2<usize>);
 
 impl Vec2 {
@@ -20,7 +20,13 @@ impl Ord for Vec2 {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+impl PartialOrd for Vec2 {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Tile {
     Sand,
     Clay,

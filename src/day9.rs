@@ -1,26 +1,5 @@
 use std::collections::VecDeque;
 
-trait Rotatable {
-    fn rotate_left(&mut self, count: usize);
-    fn rotate_right(&mut self, count: usize);
-}
-
-impl<T> Rotatable for VecDeque<T> {
-    fn rotate_left(&mut self, count: usize) {
-        for _ in 0..count {
-            let tmp = self.pop_back().unwrap();
-            self.push_front(tmp);
-        }
-    }
-
-    fn rotate_right(&mut self, count: usize) {
-        for _ in 0..count {
-            let tmp = self.pop_front().unwrap();
-            self.push_back(tmp);
-        }
-    }
-}
-
 #[derive(Clone)]
 pub struct Game {
     players: usize,
@@ -35,10 +14,10 @@ impl Game {
         marbles.push_back(0);
         for (marble, player_index) in (1..=self.last_marble).zip((0..scores.len()).cycle()) {
             if marble % 23 != 0 {
-                marbles.rotate_left(2);
+                marbles.rotate_right( 2 % marbles.len());
                 marbles.push_back(marble);
             } else {
-                marbles.rotate_right(7);
+                marbles.rotate_left(7 % marbles.len());
                 scores[player_index] += marble + marbles.pop_back().unwrap();
             }
         }
