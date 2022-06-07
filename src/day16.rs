@@ -64,7 +64,7 @@ pub fn guess_opcode(samples: &[Sample]) -> HashMap<usize, Opcode> {
 pub struct UnknownInstruction([usize; 4]);
 
 impl FromStr for UnknownInstruction {
-    type Err = Box<Error>;
+    type Err = Box<dyn Error>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut instruction: UnknownInstruction = Default::default();

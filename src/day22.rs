@@ -3,6 +3,7 @@ use num_derive::FromPrimitive;
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};
 use strum::{EnumCount, IntoEnumIterator};
+use strum_macros::EnumCount;
 
 #[derive(Debug, Clone, Copy, EnumCount, FromPrimitive)]
 pub enum RegionType {
@@ -88,7 +89,7 @@ impl Cave {
     }
 
     pub fn region_type(&mut self, region: Vector2<usize>) -> RegionType {
-        num_traits::FromPrimitive::from_usize(self.erosion_level(region) % RegionType::count())
+        num_traits::FromPrimitive::from_usize(self.erosion_level(region) % RegionType::COUNT)
             .unwrap()
     }
 

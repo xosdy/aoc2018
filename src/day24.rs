@@ -42,7 +42,7 @@ impl Group {
 }
 
 impl FromStr for Group {
-    type Err = Box<Error>;
+    type Err = Box<dyn Error>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let re = Regex::new(concat!(
